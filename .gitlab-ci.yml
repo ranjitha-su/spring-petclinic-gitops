@@ -1,0 +1,19 @@
+stages:
+  - update-manifests
+
+update-manifests:
+  stage: udpate-manifests
+  image: mikefarah/yq
+  script: 
+    - echo "Update image tag to ${NEW_TAG} in ${UPSTREAM_ENVIRONMENT_NAME}"
+     # Update the image tag in deployment.yaml
+    - yq e '(.spec.template.spec.containers[] | select(.name == "spring-petclinic-app") | .image) = "spring-petclinic:'"$NEW_TAG"'"' -i base/kustomization.yaml
+    
+    # Commit the changes back to the manifest repository
+    - git config --global user.email "ci-bot@gitlab.com"
+    - git config --global user.name "GitLab CI"
+    - git commit -am "Update image to $NEW_TAG"
+    - git push origin main
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+

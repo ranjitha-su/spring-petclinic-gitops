@@ -1,0 +1,7 @@
+# overlays/dev/kustomization.yaml
+resources:
+  - ../../base
+
+images:
+  - name: spring-petclinic
+    newTag: 3.0
