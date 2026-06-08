@@ -1,8 +1,11 @@
 spec:
   inputs:
     SERVICE_NAME:
+      default: ""
     NEW_TAG:
+      default: ""
     UPSTREAM_ENVIRONMENT_NAME:
+      default: ""
 
 ---
 stages:
@@ -10,7 +13,9 @@ stages:
 
 update-manifests:
   stage: update-manifests
-  image: mikefarah/yq
+  image:
+    name: mikefarah/yq
+    entrypoint: [""]
   script:
     - echo "Update $[[ inputs.UPSTREAM_ENVIRONMENT_NAME ]] image tag to $[[ inputs.NEW_TAG ]] in $[[ inputs.SERVICE_NAME ]]"
      # Update the image tag in deployment.yaml
@@ -20,8 +25,9 @@ update-manifests:
     # Commit the changes back to the manifest repository
     - git config --global user.email "ci-bot@gitlab.com"
     - git config --global user.name "GitLab CI"
+    - git checkout main
     - git commit -am "Update image to $NEW_TAG"
-    - git push -o ci.skip origin main
+    - git push -o ci.skip "https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@gitlab.com/ranjitha-projects/spring-petclinic-gitops.git"
   rules:
     # Run this downstream pipeline only if triggered by upstream pipeline.
     - if: $CI_PIPELINE_SOURCE == "pipeline"
