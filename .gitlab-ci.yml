@@ -5,9 +5,10 @@ update-manifests:
   stage: udpate-manifests
   image: mikefarah/yq
   script: 
-    - echo "Update image tag to ${NEW_TAG} in ${UPSTREAM_ENVIRONMENT_NAME}"
+    - echo "Update ${SERVICE_NAME} image tag to ${NEW_TAG} in ${UPSTREAM_ENVIRONMENT_NAME}"
      # Update the image tag in deployment.yaml
-    - yq e '(.spec.template.spec.containers[] | select(.name == "spring-petclinic-app") | .image) = "spring-petclinic:'"$NEW_TAG"'"' -i base/kustomization.yaml
+    - yq -i "(.images[] | select(.name == \"$SERVICE_NAME\") | .newTag) = \"$NEW_TAG\"" overlays/dev/kustomization.yaml
+
     
     # Commit the changes back to the manifest repository
     - git config --global user.email "ci-bot@gitlab.com"
@@ -15,5 +16,6 @@ update-manifests:
     - git commit -am "Update image to $NEW_TAG"
     - git push origin main
   rules:
+    # Run this downstream pipeline only if triggered by upstream pipeline.
     - if: $CI_PIPELINE_SOURCE == "pipeline"
 
