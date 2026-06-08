@@ -9,4 +9,4 @@ labels:
 images:
   - name: spring-petclinic-app
     newName: "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/spring-petclinic"
-    newTag: 3.0
+    newTag: "4.0"
