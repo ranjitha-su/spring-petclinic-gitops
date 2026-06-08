@@ -1,13 +1,20 @@
+spec:
+  inputs:
+    SERVICE_NAME:
+    NEW_TAG:
+    UPSTREAM_ENVIRONMENT_NAME:
+
+---
 stages:
   - update-manifests
 
 update-manifests:
   stage: update-manifests
   image: mikefarah/yq
-  script: 
-    - echo "Update ${SERVICE_NAME} image tag to ${NEW_TAG} in ${UPSTREAM_ENVIRONMENT_NAME}"
+  script:
+    - echo "Update $[[ inputs.UPSTREAM_ENVIRONMENT_NAME ]] image tag to $[[ inputs.NEW_TAG ]] in $[[ inputs.SERVICE_NAME ]]"
      # Update the image tag in deployment.yaml
-    - yq -i "(.images[] | select(.name == \"$SERVICE_NAME\") | .newTag) = \"$NEW_TAG\"" overlays/dev/kustomization.yaml
+    - yq -i "(.images[] | select(.name == \"$[[ inputs.SERVICE_NAME ]]\") | .newTag) = \"$[[ inputs.NEW_TAG ]]\"" overlays/dev/kustomization.yaml
 
     
     # Commit the changes back to the manifest repository
