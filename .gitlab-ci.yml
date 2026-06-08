@@ -17,7 +17,8 @@ update-manifests:
     - wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
     - chmod +x /usr/local/bin/yq
   script:
-    - echo "Update $[[ inputs.UPSTREAM_ENVIRONMENT_NAME ]] image tag to $[[ inputs.NEW_TAG ]] in $[[ inputs.SERVICE_NAME ]]"
+    - TARGET_ENV=$(yq '.labels[0].pairs.environment' overlays/dev/kustomization.yaml)
+    - echo "Update $TARGET_ENV image tag to $[[ inputs.NEW_TAG ]] in $[[ inputs.SERVICE_NAME ]]"
      # Update the image tag in deployment.yaml
     - yq -i "(.images[] | select(.name == \"$[[ inputs.SERVICE_NAME ]]\") | .newTag) = \"$[[ inputs.NEW_TAG ]]\"" overlays/dev/kustomization.yaml
 
