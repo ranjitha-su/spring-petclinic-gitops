@@ -2,7 +2,7 @@ stages:
   - update-manifests
 
 update-manifests:
-  stage: udpate-manifests
+  stage: update-manifests
   image: mikefarah/yq
   script: 
     - echo "Update ${SERVICE_NAME} image tag to ${NEW_TAG} in ${UPSTREAM_ENVIRONMENT_NAME}"
@@ -14,8 +14,9 @@ update-manifests:
     - git config --global user.email "ci-bot@gitlab.com"
     - git config --global user.name "GitLab CI"
     - git commit -am "Update image to $NEW_TAG"
-    - git push origin main
+    - git push -o ci.skip origin main
   rules:
     # Run this downstream pipeline only if triggered by upstream pipeline.
     - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: always
 
