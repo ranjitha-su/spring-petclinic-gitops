@@ -1,13 +1,3 @@
-spec:
-  inputs:
-    SERVICE_NAME:
-      default: ""
-    NEW_TAG:
-      default: ""
-    UPSTREAM_ENVIRONMENT_NAME:
-      default: ""
-
----
 stages:
   - update-manifests
 
@@ -17,16 +7,14 @@ update-manifests:
     - wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
     - chmod +x /usr/local/bin/yq
   script:
-    - TARGET_ENV=$(yq '.labels[0].pairs.environment' overlays/dev/kustomization.yaml)
-    - echo "Update $TARGET_ENV image tag to $NEW_TAG in $SERVICE_NAME"
-     # Update the image tag in deployment.yaml
-    - yq -i "(.images[] | select(.name == \"$SERVICE_NAME\") | .newTag) = \"$NEW_TAG\"" overlays/dev/kustomization.yaml
-
-    
     # Commit the changes back to the manifest repository
     - git config --global user.email "ci-bot@gitlab.com"
     - git config --global user.name "GitLab CI"
     - git checkout main
+    - TARGET_ENV=$(yq '.labels[0].pairs.environment' overlays/dev/kustomization.yaml)
+    - echo "Update $TARGET_ENV image tag to $NEW_TAG in $SERVICE_NAME"
+     # Update the image tag in kustomization.yaml
+    - yq -i "(.images[] | select(.name == \"$SERVICE_NAME\") | .newTag) = \"$NEW_TAG\"" overlays/dev/kustomization.yaml
     - git commit -am "Update image to $NEW_TAG"
     - git push -o ci.skip "https://${GITLAB_USERNAME}:${GITLAB_TOKEN}@gitlab.com/ranjitha-projects/spring-petclinic-gitops.git"
   rules:
