@@ -1,51 +1,28 @@
-# microservices-gitops
+# spring-petclinic-gitops
 
-> **Part of a 3-repo end-to-end DevSecOps project.**  
-> | [microservices-app](https://gitlab.com/ranjitha-projects/microservices-demo-app) | [microservices-gitops](https://gitlab.com/ranjitha-projects/microservices-gitops) | [eks-platform](https://gitlab.com/ranjitha-projects/terraform-eks-platform) |
-
----
-
-## What This Repo Does
-
-**microservices-gitops:** Contains Kubernetes manifests managed with Kustomize. The image tag in `kustomization.yaml` is automatically updated by the application pipeline. ArgoCD watches this repo and syncs changes to the EKS cluster.
+> **Part of a 3-repo End-to-End DevSecOps Application release pipeline.**  
+> | [spring-petclinic-app](https://gitlab.com/ranjitha-projects/spring-petclinic-app) | [spring-petclinic-gitops](https://gitlab.com/ranjitha-projects/spring-petclinic-gitops) | [eks-platform](https://gitlab.com/ranjitha-projects/terraform-eks-platform) |
 
 ---
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Developer Pushes Code                   │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────┐
-│   microservices-app             │
-│   GitLab CI Pipeline            │
-│   - Lint & test                 │
-│   - Build Docker image          │
-│   - Push to Docker Hub          │
-│   - Trigger GitOps pipeline ────┼──────────────┐
-└─────────────────────────────────┘              │
-                                                 ▼
-                                  ┌──────────────────────────┐
-                                  │   microservices-gitops   │
-                                  │   GitLab CI Pipeline     │
-                                  │   - Update image tag in  │
-                                  │     kustomization.yaml   │
-                                  │   - Commit & push        │
-                                  └──────────┬───────────────┘
-                                             │
-                                             │ ArgoCD watches
-                                             ▼
-                                  ┌──────────────────────────┐
-                                  │   eks-platform           │
-                                  │   EKS Cluster (AWS)      │
-                                  │   - ArgoCD syncs         │
-                                  │     manifests            │
-                                  │   - App deployed to k8s  │
-                                  └──────────────────────────┘
-```
+![GitOpsEndToEnd](GitOpsEndToEndApplicationReleasePipeline.png)
+
+## What This Repo Does
+
+**spring-petclinic-gitops:** Contains Kubernetes manifests managed with Kustomize. The image tag in `kustomization.yaml` is automatically updated by the application pipeline. ArgoCD watches this repo and syncs changes to the EKS cluster.
+
+---
+
+## Prerequisites
+
+The following CI/CD variables must be set in **GitLab → Settings → CI/CD → Variables** before the pipeline can run:
+
+| Variable | Description |
+|----------|-------------|
+| `GITLAB_USERNAME` | GitLab username used by the CI bot to push back to this repo |
+| `GITLAB_TOKEN` | GitLab personal or project (more secure) access token with `write_repository` scope |
 
 ---
 
@@ -64,7 +41,7 @@
 
 ## CI/CD Note
 
-Pipelines are implemented in **GitLab CI** (private). The `.gitlab-ci.yml` is available on request. This GitHub repo is the portfolio mirror.
+Pipelines are implemented in **GitLab CI**.
 
 ---
 
@@ -72,6 +49,6 @@ Pipelines are implemented in **GitLab CI** (private). The `.gitlab-ci.yml` is av
 
 | Repo | Purpose |
 |------|---------|
-| [microservices-app](https://github.com/youruser/microservices-app) | Application source code + CI pipeline |
-| [microservices-gitops](https://github.com/youruser/microservices-gitops) | K8s manifests + ArgoCD config |
+| [spring-petclinic-app](https://github.com/youruser/spring-petclinic-app) | Application source code + CI pipeline |
+| [spring-petclinic-gitops](https://github.com/youruser/spring-petclinic-gitops) | K8s manifests + ArgoCD config |
 | [eks-platform](https://github.com/youruser/eks-platform) | EKS cluster + ArgoCD bootstrap (Terraform) |
