@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: spring-petclinic-app
-        image: spring-petclinic-image
+        image: spring-petclinic
         ports:
         - containerPort: 8080
 ---
